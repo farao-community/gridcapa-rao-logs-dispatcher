@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        dispatchRaoLogsEvents-in-0:
+          destination: rao-runners-logs-exchange-name
+        dispatch-logs:
+          group: group-name
+          destination: exchange-name
+      rabbit:
+        default:
+          consumer:
+            auto-bind-dlq: true
+            max-attempts: 1
+    function:
+      definition: dispatchRaoLogsEvents
+
+client:
+  name: client-app-id
