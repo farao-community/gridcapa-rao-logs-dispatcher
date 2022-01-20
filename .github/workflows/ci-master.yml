@@ -45,4 +45,4 @@ jobs:
         uses: farao-community/broadcast-event@master
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          event-type: gridcapa-rao-logs-dispatcher_updated
+          event-type: gridcapa_rao_logs_dispatcher_updated
