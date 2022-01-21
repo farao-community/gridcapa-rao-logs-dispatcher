@@ -17,7 +17,6 @@ public class RaoRunnerLogsModel {
     private final String gridcapaTaskId;
     private final String computationId;
     private final String clientAppId;
-
     private final String level;
     private final String timestamp;
     private final String message;
