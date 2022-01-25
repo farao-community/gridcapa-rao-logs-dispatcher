@@ -11,11 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.farao_community.farao.gridcapa.task_manager.api.TaskLogEventUpdate;
 import reactor.core.publisher.Flux;
@@ -28,41 +27,27 @@ public class RaoLogsDispatcherService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RaoLogsDispatcherService.class);
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @Value("${client.name}")
     private String clientName;
 
-    private static final String DESTINATION_LOGS_BINDING = "dispatch-logs";
-
-    private final StreamBridge streamBridge;
-
-    public RaoLogsDispatcherService(StreamBridge streamBridge) {
-        this.streamBridge = streamBridge;
-    }
-
     @Bean
-    public Consumer<Flux<String>> consumeLogsFromRaoRunnersPool() {
+    public Function<Flux<String>, Flux<TaskLogEventUpdate>> dispatchRaoEvents() {
         return f -> f
             .onErrorContinue((t, r) -> LOGGER.error(t.getMessage(), t))
-            .subscribe(this::dispatchRaoEvents);
+            .map(this::parseLog)
+            .filter(raoRunnerLogsModel -> raoRunnerLogsModel.getClientAppId().equals(clientName))
+            .map(log -> new TaskLogEventUpdate(log.getGridcapaTaskId(), log.getTimestamp(), log.getLevel(), log.getMessage(), log.getServiceName()));
     }
 
-    void dispatchRaoEvents(String logEventString) {
+    RaoRunnerLogsModel parseLog(String logEventString) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            RaoRunnerLogsModel raoLog = objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
-            if (raoLog.getClientAppId().equals(clientName)) {
-                streamBridge.send(DESTINATION_LOGS_BINDING, convertToTaskManagerEventModel(raoLog));
-            }
+            LOGGER.info(logEventString);
+            return objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
         } catch (JsonProcessingException e) {
-            LOGGER.warn("parsing exception occurred while reading log event", e);
+            throw new RuntimeException("parsing exception occurred while reading log event", e);
         }
     }
 
-    private TaskLogEventUpdate convertToTaskManagerEventModel(RaoRunnerLogsModel raoLog) {
-        return new TaskLogEventUpdate(raoLog.getGridcapaTaskId(),
-            raoLog.getTimestamp(),
-            raoLog.getLevel(),
-            raoLog.getMessage(),
-            raoLog.getServiceName());
-    }
 }
