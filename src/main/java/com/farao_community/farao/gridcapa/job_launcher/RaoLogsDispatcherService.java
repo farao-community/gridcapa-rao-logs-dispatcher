@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.function.Consumer;
 
 import com.farao_community.farao.gridcapa.task_manager.api.TaskLogEventUpdate;
+import reactor.core.publisher.Flux;
 
 /**
  * @author Mohamed Benrejeb {@literal <mohamed.ben-rejeb at rte-france.com>}
@@ -39,19 +40,22 @@ public class RaoLogsDispatcherService {
     }
 
     @Bean
-    public Consumer<String> dispatchRaoLogsEvents() {
-        return logEventString -> {
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                RaoRunnerLogsModel raoLog = objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
-                if (raoLog.getClientAppId().equals(clientName)) {
+    public Consumer<Flux<String>> consumeLogsFromRaoRunnersPool() {
+        return f -> f
+            .onErrorContinue((t, r) -> LOGGER.error(t.getMessage(), t))
+            .subscribe(this::dispatchRaoEvents);
+    }
 
-                    streamBridge.send(DESTINATION_LOGS_BINDING, convertToTaskManagerEventModel(raoLog));
-                }
-            } catch (JsonProcessingException e) {
-                LOGGER.warn("parsing exception occurred while reading log event", e);
+    void dispatchRaoEvents(String logEventString) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            RaoRunnerLogsModel raoLog = objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
+            if (raoLog.getClientAppId().equals(clientName)) {
+                streamBridge.send(DESTINATION_LOGS_BINDING, convertToTaskManagerEventModel(raoLog));
             }
-        };
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("parsing exception occurred while reading log event", e);
+        }
     }
 
     private TaskLogEventUpdate convertToTaskManagerEventModel(RaoRunnerLogsModel raoLog) {

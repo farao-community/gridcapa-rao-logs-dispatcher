@@ -1,8 +1,8 @@
-# GridCapa job launcher application
+# GridCapa Rao logs dispatcher application
 
 [![MPL-2.0 License](https://img.shields.io/badge/license-MPL_2.0-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 
-This repository contains a service dedicated do dispatching logs coming from rao-runner pool to caller applications. 
+This repository contains a service dedicated to dispatching logs coming from rao-runner pool to caller applications. 
 
 ## Build application
 

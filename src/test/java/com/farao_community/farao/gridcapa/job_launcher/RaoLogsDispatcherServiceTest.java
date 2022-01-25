@@ -39,7 +39,7 @@ class RaoLogsDispatcherServiceTest {
             "  \"serviceName\": \"RAO-RUNNER\" \n" +
             "}";
 
-        raoLogsDispatcherService.dispatchRaoLogsEvents().accept(logEvent);
+        raoLogsDispatcherService.dispatchRaoEvents(logEvent);
         assertDoesNotThrow((ThrowingSupplier<Exception>) Exception::new);
     }
 
@@ -53,7 +53,7 @@ class RaoLogsDispatcherServiceTest {
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         logger.addAppender(listAppender);
-        raoLogsDispatcherService.dispatchRaoLogsEvents().accept(logEvent);
+        raoLogsDispatcherService.dispatchRaoEvents(logEvent);
         assertEquals("com.fasterxml.jackson.core.JsonParseException", listAppender.list.get(0).getThrowableProxy().getClassName());
         assertEquals("WARN", listAppender.list.get(0).getLevel().toString());
     }

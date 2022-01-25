@@ -7,7 +7,7 @@ spring:
   cloud:
     stream:
       bindings:
-        dispatchRaoLogsEvents-in-0:
+        consumeLogsFromRaoRunnersPool-in-0:
           destination: rao-runners-logs-exchange
         dispatch-logs:
           group: cse-idcc-task-manager
@@ -18,7 +18,7 @@ spring:
             auto-bind-dlq: true
             max-attempts: 1
     function:
-      definition: dispatchRaoLogsEvents
+      definition: consumeLogsFromRaoRunnersPool
 
 client:
   name: cse-idcc-runner
