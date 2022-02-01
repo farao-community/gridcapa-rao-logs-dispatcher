@@ -43,7 +43,6 @@ public class RaoLogsDispatcherService {
 
     RaoRunnerLogsModel parseLog(String logEventString) {
         try {
-            LOGGER.info(logEventString);
             return objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("parsing exception occurred while reading log event", e);
