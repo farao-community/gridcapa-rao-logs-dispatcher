@@ -6,14 +6,11 @@
  */
 package com.farao_community.farao.gridcapa.job_launcher;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
+import com.farao_community.farao.gridcapa.task_manager.api.TaskLogEventUpdate;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.ThrowingSupplier;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Flux;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +25,23 @@ class RaoLogsDispatcherServiceTest {
     RaoLogsDispatcherService raoLogsDispatcherService;
 
     @Test
-    void checkThatRaoLogsAreConvertedAndSentWithoutException() {
+    void dispatchingTest() {
+        String logEvent = "{\n" +
+            "  \"clientAppId\": \"client-app-id\",\n" +
+            "  \"computationId\": \"54\",\n" +
+            "  \"gridcapaTaskId\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
+            "  \"timestamp\": \"2021-12-30T17:31:33.030+01:00\",\n" +
+            "  \"level\": \"INFO\",\n" +
+            "  \"message\": \"Hello from RAO-RUNNER\",\n" +
+            "  \"serviceName\": \"RAO-RUNNER\" \n" +
+            "}";
+        Flux<TaskLogEventUpdate> taskLogEventUpdateFlux = raoLogsDispatcherService.dispatchRaoEvents().apply(Flux.just(logEvent));
+        assertTrue(taskLogEventUpdateFlux.toIterable().iterator().hasNext());
+        assertEquals("Hello from RAO-RUNNER", taskLogEventUpdateFlux.blockFirst().getMessage());
+    }
+
+    @Test
+    void checkThatRaoLogsParsedCorrectly() {
         String logEvent = "{\n" +
             "  \"clientAppId\": \"cse-idcc-runner\",\n" +
             "  \"computationId\": \"54\",\n" +
@@ -39,8 +52,9 @@ class RaoLogsDispatcherServiceTest {
             "  \"serviceName\": \"RAO-RUNNER\" \n" +
             "}";
 
-        raoLogsDispatcherService.dispatchRaoLogsEvents().accept(logEvent);
-        assertDoesNotThrow((ThrowingSupplier<Exception>) Exception::new);
+        RaoRunnerLogsModel raoRunnerLogsModel = raoLogsDispatcherService.parseLog(logEvent);
+        assertEquals("2021-12-30T17:31:33.030+01:00", raoRunnerLogsModel.getTimestamp());
+        assertEquals("cse-idcc-runner", raoRunnerLogsModel.getClientAppId());
     }
 
     @Test
@@ -49,12 +63,7 @@ class RaoLogsDispatcherServiceTest {
             "  \"clientAppId\": \"cse-idcc-runner\",\n" +
             "  \"UnKnownField\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
             "}";
-        Logger logger = (Logger) LoggerFactory.getLogger(RaoLogsDispatcherService.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-        logger.addAppender(listAppender);
-        raoLogsDispatcherService.dispatchRaoLogsEvents().accept(logEvent);
-        assertEquals("com.fasterxml.jackson.core.JsonParseException", listAppender.list.get(0).getThrowableProxy().getClassName());
-        assertEquals("WARN", listAppender.list.get(0).getLevel().toString());
+        assertThrows(RuntimeException.class, () -> raoLogsDispatcherService.parseLog(logEvent));
     }
+
 }

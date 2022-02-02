@@ -6,19 +6,20 @@ spring:
     password: ${GRIDCAPA_RABBITMQ_PASSWORD:gridcapa}
   cloud:
     stream:
+      default:
+        group: cse-idcc
       bindings:
-        dispatchRaoLogsEvents-in-0:
+        dispatchRaoEvents-in-0:
           destination: rao-runners-logs-exchange
-        dispatch-logs:
-          group: cse-idcc-task-manager
-          destination: task-manager-logs-exchange   # queue: exchange.group-name # final queue name:  task-manager-logs-exchange.cse-idcc-task-manager
+        dispatchRaoEvents-out-0:
+          destination: cse-idcc-task-manager-logs-exchange
       rabbit:
         default:
           consumer:
             auto-bind-dlq: true
             max-attempts: 1
     function:
-      definition: dispatchRaoLogsEvents
+      definition: dispatchRaoEvents
 
 client:
   name: cse-idcc-runner
