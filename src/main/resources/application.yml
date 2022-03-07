@@ -7,12 +7,12 @@ spring:
   cloud:
     stream:
       default:
-        group: cse-idcc
+        group: x  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...
       bindings:
         dispatchRaoEvents-in-0:
           destination: rao-runners-logs-exchange
         dispatchRaoEvents-out-0:
-          destination: cse-idcc-task-manager-logs-exchange
+          destination: x-task-manager-logs-exchange  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...
       rabbit:
         default:
           consumer:
@@ -22,4 +22,4 @@ spring:
       definition: dispatchRaoEvents
 
 client:
-  name: cse-idcc-runner
+  name: x-runner  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...

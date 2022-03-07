@@ -58,12 +58,21 @@ class RaoLogsDispatcherServiceTest {
     }
 
     @Test
-    void checkThatExceptionIsThrownIfRaoLogsDoesNotMatchExpectedModel() {
+    void checkThatNoExceptionIsThrownIfRaoLogsDoesNotMatchExpectedModel() {
         String logEvent = "{\n" +
             "  \"clientAppId\": \"cse-idcc-runner\",\n" +
             "  \"UnKnownField\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
             "}";
-        assertThrows(RuntimeException.class, () -> raoLogsDispatcherService.parseLog(logEvent));
+        assertDoesNotThrow(() -> raoLogsDispatcherService.parseLog(logEvent));
     }
 
+    @Test
+    void checkThatEventIsIgnoredIfRaoLogsDoesNotMatchExpectedModel() {
+        String logEvent = "{\n" +
+            "  \"clientAppId\": \"cse-idcc-runner\",\n" +
+            "  \"UnKnownField\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
+            "}";
+        Flux<TaskLogEventUpdate> taskLogEventUpdateFlux = raoLogsDispatcherService.dispatchRaoEvents().apply(Flux.just(logEvent));
+        assertFalse(taskLogEventUpdateFlux.toIterable().iterator().hasNext());
+    }
 }
