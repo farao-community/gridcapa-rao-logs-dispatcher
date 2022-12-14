@@ -38,7 +38,7 @@ public class RaoLogsDispatcherService {
             .onErrorContinue((t, r) -> LOGGER.error(t.getMessage(), t))
             .map(this::parseLog)
             .filter(raoRunnerLogsModel -> raoRunnerLogsModel.getClientAppId().equals(clientName))
-            .map(log -> new TaskLogEventUpdate(log.getGridcapaTaskId(), log.getTimestamp(), log.getLevel(), log.getMessage(), log.getServiceName()));
+            .map(log -> new TaskLogEventUpdate(log.getGridcapaTaskId(), log.getTimestamp(), log.getLevel(), log.getMessage(), log.getServiceName(), log.getEventPrefix()));
     }
 
     RaoRunnerLogsModel parseLog(String logEventString) {
@@ -46,7 +46,7 @@ public class RaoLogsDispatcherService {
             return objectMapper.readValue(logEventString, RaoRunnerLogsModel.class);
         } catch (JsonProcessingException e) {
             LOGGER.error("parsing exception occurred while reading log event '{}', event will be ignored", logEventString);
-            return new RaoRunnerLogsModel("", "", "", "", "", "", "");
+            return new RaoRunnerLogsModel("", "", "", "", "", "", "", "");
         }
     }
 

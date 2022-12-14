@@ -15,7 +15,7 @@
     </description>
 
     <properties>
-        <task-manager.version>0.3.0</task-manager.version>
+        <task-manager.version>1.10.0-SNAPSHOT</task-manager.version>
     </properties>
 
     <build>

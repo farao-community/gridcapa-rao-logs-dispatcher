@@ -21,10 +21,11 @@ public class RaoRunnerLogsModel {
     private final String timestamp;
     private final String message;
     private final String serviceName;
+    private final String eventPrefix;
 
     @JsonCreator
     public RaoRunnerLogsModel(@JsonProperty("gridcapaTaskId") String gridcapaTaskId, @JsonProperty("computationId") String computationId, @JsonProperty("clientAppId") String clientAppId,
-                              @JsonProperty("level") String level,  @JsonProperty("timestamp") String timestamp, @JsonProperty("message") String message, @JsonProperty("serviceName") String serviceName) {
+                              @JsonProperty("level") String level, @JsonProperty("timestamp") String timestamp, @JsonProperty("message") String message, @JsonProperty("serviceName") String serviceName, @JsonProperty("eventPrefix") String eventPrefix) {
         this.gridcapaTaskId = gridcapaTaskId;
         this.computationId = computationId;
         this.clientAppId = clientAppId;
@@ -32,6 +33,12 @@ public class RaoRunnerLogsModel {
         this.timestamp = timestamp;
         this.message = message;
         this.serviceName = serviceName;
+        this.eventPrefix = eventPrefix;
+    }
+
+    public RaoRunnerLogsModel(@JsonProperty("gridcapaTaskId") String gridcapaTaskId, @JsonProperty("computationId") String computationId, @JsonProperty("clientAppId") String clientAppId,
+                              @JsonProperty("level") String level, @JsonProperty("timestamp") String timestamp, @JsonProperty("message") String message, @JsonProperty("serviceName") String serviceName) {
+        this(gridcapaTaskId, computationId, clientAppId, level, timestamp, message, serviceName, null);
     }
 
     public String getGridcapaTaskId() {
@@ -60,5 +67,9 @@ public class RaoRunnerLogsModel {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public String getEventPrefix() {
+        return eventPrefix;
     }
 }
