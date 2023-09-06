@@ -8,14 +8,14 @@
         <version>1.3.0</version>
     </parent>
     <artifactId>gridcapa-rao-logs-dispatcher</artifactId>
-    <version>1.2.0-SNAPSHOT-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>gridcapa-rao-logs-dispatcher</name>
     <description>Service responsible of dispatching logs coming from rao runner's pool to the concerned calling
         application.
     </description>
 
     <properties>
-        <task-manager.version>1.11.0</task-manager.version>
+        <task-manager.version>1.20.0</task-manager.version>
     </properties>
 
     <build>
