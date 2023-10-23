@@ -35,9 +35,9 @@ public class RaoLogsDispatcherService {
     @Bean
     public Function<Flux<String>, Flux<TaskLogEventUpdate>> dispatchRaoEvents() {
         return f -> f
-            .onErrorContinue((t, r) -> LOGGER.error(t.getMessage(), t))
+            .onErrorContinue((t, r) -> LOGGER.error("Error while processing message: \"" + r + "\". Error message is: " + t.getMessage(), t))
             .map(this::parseLog)
-            .filter(raoRunnerLogsModel -> raoRunnerLogsModel.getClientAppId().equals(clientName))
+            .filter(raoRunnerLogsModel -> clientName.equals(raoRunnerLogsModel.getClientAppId()))
             .map(log -> new TaskLogEventUpdate(log.getGridcapaTaskId(), log.getTimestamp(), log.getLevel(), log.getMessage(), log.getServiceName(), log.getEventPrefix()));
     }
 
