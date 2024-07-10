@@ -1,25 +1,4 @@
 spring:
-  rabbitmq:
-    host: ${GRIDCAPA_RABBITMQ_HOST:localhost}
-    port: ${GRIDCAPA_RABBITMQ_PORT:5672}
-    username: ${GRIDCAPA_RABBITMQ_USERNAME:gridcapa}
-    password: ${GRIDCAPA_RABBITMQ_PASSWORD:gridcapa}
   cloud:
-    stream:
-      default:
-        group: x  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...
-      bindings:
-        dispatchRaoEvents-in-0:
-          destination: rao-runners-logs-exchange
-        dispatchRaoEvents-out-0:
-          destination: x-task-manager-logs-exchange  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...
-      rabbit:
-        default:
-          consumer:
-            auto-bind-dlq: true
-            max-attempts: 1
     function:
       definition: dispatchRaoEvents
-
-client:
-  name: x-runner  # x must be replaced by process name: cse-idcc, cse-d2cc, core-valid...
