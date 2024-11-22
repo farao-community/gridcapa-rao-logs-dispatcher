@@ -8,7 +8,7 @@
         <version>1.9.0</version>
     </parent>
     <artifactId>gridcapa-rao-logs-dispatcher</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <name>gridcapa-rao-logs-dispatcher</name>
     <description>Service responsible of dispatching logs coming from rao runner's pool to the concerned calling
         application.
