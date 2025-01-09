@@ -26,15 +26,16 @@ class RaoLogsDispatcherServiceTest {
 
     @Test
     void dispatchingTest() {
-        String logEvent = "{\n" +
-            "  \"clientAppId\": \"client-app-id\",\n" +
-            "  \"computationId\": \"54\",\n" +
-            "  \"gridcapaTaskId\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
-            "  \"timestamp\": \"2021-12-30T17:31:33.030+01:00\",\n" +
-            "  \"level\": \"INFO\",\n" +
-            "  \"message\": \"Hello from RAO-RUNNER\",\n" +
-            "  \"serviceName\": \"RAO-RUNNER\" \n" +
-            "}";
+        String logEvent = """
+                {
+                  "clientAppId": "client-app-id",
+                  "computationId": "54",
+                  "gridcapaTaskId": "1fdda469-53e9-4d63-a533-b935cffdd2f6",
+                  "timestamp": "2021-12-30T17:31:33.030+01:00",
+                  "level": "INFO",
+                  "message": "Hello from RAO-RUNNER",
+                  "serviceName": "RAO-RUNNER"\s
+                }""";
         Flux<TaskLogEventUpdate> taskLogEventUpdateFlux = raoLogsDispatcherService.dispatchRaoEvents().apply(Flux.just(logEvent));
         assertTrue(taskLogEventUpdateFlux.toIterable().iterator().hasNext());
         assertEquals("Hello from RAO-RUNNER", taskLogEventUpdateFlux.blockFirst().getMessage());
@@ -42,15 +43,16 @@ class RaoLogsDispatcherServiceTest {
 
     @Test
     void checkThatRaoLogsParsedCorrectly() {
-        String logEvent = "{\n" +
-            "  \"clientAppId\": \"cse-idcc-runner\",\n" +
-            "  \"computationId\": \"54\",\n" +
-            "  \"gridcapaTaskId\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
-            "  \"timestamp\": \"2021-12-30T17:31:33.030+01:00\",\n" +
-            "  \"level\": \"INFO\",\n" +
-            "  \"message\": \"Hello from RAO-RUNNER\",\n" +
-            "  \"serviceName\": \"RAO-RUNNER\" \n" +
-            "}";
+        String logEvent = """
+                {
+                  "clientAppId": "cse-idcc-runner",
+                  "computationId": "54",
+                  "gridcapaTaskId": "1fdda469-53e9-4d63-a533-b935cffdd2f6",
+                  "timestamp": "2021-12-30T17:31:33.030+01:00",
+                  "level": "INFO",
+                  "message": "Hello from RAO-RUNNER",
+                  "serviceName": "RAO-RUNNER"\s
+                }""";
 
         RaoRunnerLogsModel raoRunnerLogsModel = raoLogsDispatcherService.parseLog(logEvent);
         assertEquals("2021-12-30T17:31:33.030+01:00", raoRunnerLogsModel.getTimestamp());
@@ -59,19 +61,21 @@ class RaoLogsDispatcherServiceTest {
 
     @Test
     void checkThatNoExceptionIsThrownIfRaoLogsDoesNotMatchExpectedModel() {
-        String logEvent = "{\n" +
-            "  \"clientAppId\": \"cse-idcc-runner\",\n" +
-            "  \"UnKnownField\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
-            "}";
+        String logEvent = """
+                {
+                  "clientAppId": "cse-idcc-runner",
+                  "UnKnownField": "1fdda469-53e9-4d63-a533-b935cffdd2f6",
+                }""";
         assertDoesNotThrow(() -> raoLogsDispatcherService.parseLog(logEvent));
     }
 
     @Test
     void checkThatEventIsIgnoredIfRaoLogsDoesNotMatchExpectedModel() {
-        String logEvent = "{\n" +
-            "  \"clientAppId\": \"cse-idcc-runner\",\n" +
-            "  \"UnKnownField\": \"1fdda469-53e9-4d63-a533-b935cffdd2f6\",\n" +
-            "}";
+        String logEvent = """
+                {
+                  "clientAppId": "cse-idcc-runner",
+                  "UnKnownField": "1fdda469-53e9-4d63-a533-b935cffdd2f6",
+                }""";
         Flux<TaskLogEventUpdate> taskLogEventUpdateFlux = raoLogsDispatcherService.dispatchRaoEvents().apply(Flux.just(logEvent));
         assertFalse(taskLogEventUpdateFlux.toIterable().iterator().hasNext());
     }
