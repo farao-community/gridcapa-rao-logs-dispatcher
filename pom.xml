@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.farao-community.farao</groupId>
         <artifactId>farao-parent-ws</artifactId>
-        <version>1.13.0</version>
+        <version>1.14.0</version>
     </parent>
     <artifactId>gridcapa-rao-logs-dispatcher</artifactId>
     <version>1.9.0-SNAPSHOT</version>
@@ -16,7 +16,7 @@
 
     <properties>
         <argLine /> <!-- required for java agent declaration, do not remove -->
-        <task-manager.version>1.33.0</task-manager.version>
+        <task-manager.version>1.38.0</task-manager.version>
     </properties>
 
     <build>
